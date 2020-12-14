@@ -2,19 +2,18 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
 
 const asyncLib = require("neo-async");
-const NormalModule = require("./NormalModule");
 const PrefetchDependency = require("./dependencies/PrefetchDependency");
+const NormalModule = require("./NormalModule");
 
 /** @typedef {import("./Compiler")} Compiler */
 
 class AutomaticPrefetchPlugin {
 	/**
 	 * Apply the plugin
-	 * @param {Compiler} compiler the compiler instance
+	 * @param {Compiler} compiler Webpack Compiler
 	 * @returns {void}
 	 */
 	apply(compiler) {
@@ -29,7 +28,7 @@ class AutomaticPrefetchPlugin {
 		);
 		let lastModules = null;
 		compiler.hooks.afterCompile.tap("AutomaticPrefetchPlugin", compilation => {
-			lastModules = Array.from(compilation.modules)
+			lastModules = compilation.modules
 				.filter(m => m instanceof NormalModule)
 				.map((/** @type {NormalModule} */ m) => ({
 					context: m.context,
@@ -43,7 +42,7 @@ class AutomaticPrefetchPlugin {
 				asyncLib.forEach(
 					lastModules,
 					(m, callback) => {
-						compilation.addModuleChain(
+						compilation.prefetch(
 							m.context || compiler.context,
 							new PrefetchDependency(m.request),
 							callback
