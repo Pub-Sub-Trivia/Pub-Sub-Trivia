@@ -2,27 +2,19 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
 
-const ImportContextDependency = require("./ImportContextDependency");
 const ImportDependency = require("./ImportDependency");
 const ImportEagerDependency = require("./ImportEagerDependency");
-const ImportParserPlugin = require("./ImportParserPlugin");
 const ImportWeakDependency = require("./ImportWeakDependency");
-
-/** @typedef {import("../Compiler")} Compiler */
+const ImportContextDependency = require("./ImportContextDependency");
+const ImportParserPlugin = require("./ImportParserPlugin");
 
 class ImportPlugin {
 	constructor(options) {
 		this.options = options;
 	}
 
-	/**
-	 * Apply the plugin
-	 * @param {Compiler} compiler the compiler instance
-	 * @returns {void}
-	 */
 	apply(compiler) {
 		const options = this.options;
 		compiler.hooks.compilation.tap(

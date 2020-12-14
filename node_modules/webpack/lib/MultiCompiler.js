@@ -2,86 +2,40 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
 
+const { Tapable, SyncHook, MultiHook } = require("tapable");
 const asyncLib = require("neo-async");
-const { SyncHook, MultiHook } = require("tapable");
-
-const ConcurrentCompilationError = require("./ConcurrentCompilationError");
-const MultiStats = require("./MultiStats");
 const MultiWatching = require("./MultiWatching");
+const MultiStats = require("./MultiStats");
+const ConcurrentCompilationError = require("./ConcurrentCompilationError");
 
-/** @template T @typedef {import("tapable").AsyncSeriesHook<T>} AsyncSeriesHook<T> */
-/** @template T @template R @typedef {import("tapable").SyncBailHook<T, R>} SyncBailHook<T, R> */
-/** @typedef {import("../declarations/WebpackOptions").WatchOptions} WatchOptions */
-/** @typedef {import("./Compiler")} Compiler */
-/** @typedef {import("./Stats")} Stats */
-/** @typedef {import("./Watching")} Watching */
-/** @typedef {import("./util/fs").InputFileSystem} InputFileSystem */
-/** @typedef {import("./util/fs").IntermediateFileSystem} IntermediateFileSystem */
-/** @typedef {import("./util/fs").OutputFileSystem} OutputFileSystem */
-/** @typedef {import("./util/fs").WatchFileSystem} WatchFileSystem */
-
-/** @typedef {number} CompilerStatus */
-
-const STATUS_PENDING = 0;
-const STATUS_DONE = 1;
-const STATUS_NEW = 2;
-
-/**
- * @template T
- * @callback Callback
- * @param {Error=} err
- * @param {T=} result
- */
-
-/**
- * @callback RunWithDependenciesHandler
- * @param {Compiler} compiler
- * @param {Callback<MultiStats>} callback
- */
-
-module.exports = class MultiCompiler {
-	/**
-	 * @param {Compiler[] | Record<string, Compiler>} compilers child compilers
-	 */
+module.exports = class MultiCompiler extends Tapable {
 	constructor(compilers) {
+		super();
+		this.hooks = {
+			done: new SyncHook(["stats"]),
+			invalid: new MultiHook(compilers.map(c => c.hooks.invalid)),
+			run: new MultiHook(compilers.map(c => c.hooks.run)),
+			watchClose: new SyncHook([]),
+			watchRun: new MultiHook(compilers.map(c => c.hooks.watchRun)),
+			infrastructureLog: new MultiHook(
+				compilers.map(c => c.hooks.infrastructureLog)
+			)
+		};
 		if (!Array.isArray(compilers)) {
 			compilers = Object.keys(compilers).map(name => {
 				compilers[name].name = name;
 				return compilers[name];
 			});
 		}
-
-		this.hooks = Object.freeze({
-			/** @type {SyncHook<[MultiStats]>} */
-			done: new SyncHook(["stats"]),
-			/** @type {MultiHook<SyncHook<[string | null, number]>>} */
-			invalid: new MultiHook(compilers.map(c => c.hooks.invalid)),
-			/** @type {MultiHook<AsyncSeriesHook<[Compiler]>>} */
-			run: new MultiHook(compilers.map(c => c.hooks.run)),
-			/** @type {SyncHook<[]>} */
-			watchClose: new SyncHook([]),
-			/** @type {MultiHook<AsyncSeriesHook<[Compiler]>>} */
-			watchRun: new MultiHook(compilers.map(c => c.hooks.watchRun)),
-			/** @type {MultiHook<SyncBailHook<[string, string, any[]], true>>} */
-			infrastructureLog: new MultiHook(
-				compilers.map(c => c.hooks.infrastructureLog)
-			)
-		});
 		this.compilers = compilers;
-		/** @type {WeakMap<Compiler, string[]>} */
-		this.dependencies = new WeakMap();
-		this.running = false;
-
-		/** @type {Stats[]} */
-		const compilerStats = this.compilers.map(() => null);
 		let doneCompilers = 0;
-		for (let index = 0; index < this.compilers.length; index++) {
-			const compiler = this.compilers[index];
-			const compilerIndex = index;
+		let compilerStats = [];
+		let index = 0;
+		for (const compiler of this.compilers) {
 			let compilerDone = false;
+			const compilerIndex = index++;
 			// eslint-disable-next-line no-loop-func
 			compiler.hooks.done.tap("MultiCompiler", stats => {
 				if (!compilerDone) {
@@ -101,10 +55,7 @@ module.exports = class MultiCompiler {
 				}
 			});
 		}
-	}
-
-	get options() {
-		return this.compilers.map(c => c.options);
+		this.running = false;
 	}
 
 	get outputPath() {
@@ -130,47 +81,15 @@ module.exports = class MultiCompiler {
 		throw new Error("Cannot read outputFileSystem of a MultiCompiler");
 	}
 
-	get watchFileSystem() {
-		throw new Error("Cannot read watchFileSystem of a MultiCompiler");
-	}
-
-	get intermediateFileSystem() {
-		throw new Error("Cannot read outputFileSystem of a MultiCompiler");
-	}
-
-	/**
-	 * @param {InputFileSystem} value the new input file system
-	 */
 	set inputFileSystem(value) {
 		for (const compiler of this.compilers) {
 			compiler.inputFileSystem = value;
 		}
 	}
 
-	/**
-	 * @param {OutputFileSystem} value the new output file system
-	 */
 	set outputFileSystem(value) {
 		for (const compiler of this.compilers) {
 			compiler.outputFileSystem = value;
-		}
-	}
-
-	/**
-	 * @param {WatchFileSystem} value the new watch file system
-	 */
-	set watchFileSystem(value) {
-		for (const compiler of this.compilers) {
-			compiler.watchFileSystem = value;
-		}
-	}
-
-	/**
-	 * @param {IntermediateFileSystem} value the new intermediate file system
-	 */
-	set intermediateFileSystem(value) {
-		for (const compiler of this.compilers) {
-			compiler.intermediateFileSystem = value;
 		}
 	}
 
@@ -178,23 +97,8 @@ module.exports = class MultiCompiler {
 		return this.compilers[0].getInfrastructureLogger(name);
 	}
 
-	/**
-	 * @param {Compiler} compiler the child compiler
-	 * @param {string[]} dependencies its dependencies
-	 * @returns {void}
-	 */
-	setDependencies(compiler, dependencies) {
-		this.dependencies.set(compiler, dependencies);
-	}
-
-	/**
-	 * @param {Callback<MultiStats>} callback signals when the validation is complete
-	 * @returns {boolean} true if the dependencies are valid
-	 */
 	validateDependencies(callback) {
-		/** @type {Set<{source: Compiler, target: Compiler}>} */
 		const edges = new Set();
-		/** @type {string[]} */
 		const missing = [];
 		const targetFound = compiler => {
 			for (const edge of edges) {
@@ -211,9 +115,8 @@ module.exports = class MultiCompiler {
 			);
 		};
 		for (const source of this.compilers) {
-			const dependencies = this.dependencies.get(source);
-			if (dependencies) {
-				for (const dep of dependencies) {
+			if (source.dependencies) {
+				for (const dep of source.dependencies) {
 					const target = this.compilers.find(c => c.name === dep);
 					if (!target) {
 						missing.push(dep);
@@ -255,12 +158,6 @@ module.exports = class MultiCompiler {
 		return true;
 	}
 
-	/**
-	 * @param {Compiler[]} compilers the child compilers
-	 * @param {RunWithDependenciesHandler} fn a handler to run for each compiler
-	 * @param {Callback<MultiStats>} callback the compiler's handler
-	 * @returns {void}
-	 */
 	runWithDependencies(compilers, fn, callback) {
 		const fulfilledNames = new Set();
 		let remainingCompilers = compilers;
@@ -270,9 +167,8 @@ module.exports = class MultiCompiler {
 			let list = remainingCompilers;
 			remainingCompilers = [];
 			for (const c of list) {
-				const dependencies = this.dependencies.get(c);
 				const ready =
-					!dependencies || dependencies.every(isDependencyFulfilled);
+					!c.dependencies || c.dependencies.every(isDependencyFulfilled);
 				if (ready) {
 					readyCompilers.push(c);
 				} else {
@@ -298,25 +194,12 @@ module.exports = class MultiCompiler {
 		runCompilers(callback);
 	}
 
-	/**
-	 * @param {WatchOptions|WatchOptions[]} watchOptions the watcher's options
-	 * @param {Callback<MultiStats>} handler signals when the call finishes
-	 * @returns {MultiWatching} a compiler watcher
-	 */
 	watch(watchOptions, handler) {
-		if (this.running) {
-			return handler(new ConcurrentCompilationError());
-		}
+		if (this.running) return handler(new ConcurrentCompilationError());
 
-		/** @type {Watching[]} */
-		const watchings = [];
-
-		/** @type {Stats[]} */
-		const allStats = this.compilers.map(() => null);
-
-		/** @type {CompilerStatus[]} */
-		const compilerStatus = this.compilers.map(() => STATUS_PENDING);
-
+		let watchings = [];
+		let allStats = this.compilers.map(() => null);
+		let compilerStatus = this.compilers.map(() => false);
 		if (this.validateDependencies(handler)) {
 			this.running = true;
 			this.runWithDependencies(
@@ -332,12 +215,12 @@ module.exports = class MultiCompiler {
 							if (err) handler(err);
 							if (stats) {
 								allStats[compilerIdx] = stats;
-								compilerStatus[compilerIdx] = STATUS_NEW;
-								if (compilerStatus.every(status => status !== STATUS_PENDING)) {
+								compilerStatus[compilerIdx] = "new";
+								if (compilerStatus.every(Boolean)) {
 									const freshStats = allStats.filter((s, idx) => {
-										return compilerStatus[idx] === STATUS_NEW;
+										return compilerStatus[idx] === "new";
 									});
-									compilerStatus.fill(STATUS_DONE);
+									compilerStatus.fill(true);
 									const multiStats = new MultiStats(freshStats);
 									handler(null, multiStats);
 								}
@@ -359,10 +242,6 @@ module.exports = class MultiCompiler {
 		return new MultiWatching(watchings, this);
 	}
 
-	/**
-	 * @param {Callback<MultiStats>} callback signals when the call finishes
-	 * @returns {void}
-	 */
 	run(callback) {
 		if (this.running) {
 			return callback(new ConcurrentCompilationError());
@@ -407,19 +286,5 @@ module.exports = class MultiCompiler {
 				compiler.inputFileSystem.purge();
 			}
 		}
-	}
-
-	/**
-	 * @param {Callback<void>} callback signals when the compiler closes
-	 * @returns {void}
-	 */
-	close(callback) {
-		asyncLib.each(
-			this.compilers,
-			(compiler, callback) => {
-				compiler.close(callback);
-			},
-			callback
-		);
 	}
 };
