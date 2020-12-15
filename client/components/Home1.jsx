@@ -8,11 +8,11 @@ import Join from './Join2.jsx'
 export default function Home(){
     return(
       <div>
-        <Link to="/create">
-          <button>Create Game</button>
-        </Link>
         <Link to="/join">
           <button>Join Game</button>
+        </Link>
+        <Link to="/create">
+          <button>Create Game</button>
         </Link>
       </div> 
     )

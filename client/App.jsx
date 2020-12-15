@@ -16,6 +16,8 @@ import EndGame from './components/EndGame6.jsx'
 
 export default function App(){
     return(
+        <div>
+        <h1>Pub Sub</h1>
         <Router>
             <Switch>
                 <Route path="/create">
@@ -52,6 +54,7 @@ export default function App(){
                 </Route>
             </Switch>
         </Router>
+        </div>
     )
 }
 
