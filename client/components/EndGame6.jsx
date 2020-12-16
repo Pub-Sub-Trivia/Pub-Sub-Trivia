@@ -4,6 +4,14 @@ import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 export default function create(){
     return(
-      <div>End Game</div>
+      <div>
+        <div>Thanks for Playing</div>
+        <div>
+          
+        </div>
+        <Link to="/home">
+          <button>Play Again?</button>
+        </Link>
+      </div>
     )
   }
