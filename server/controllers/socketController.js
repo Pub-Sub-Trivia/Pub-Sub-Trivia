@@ -20,15 +20,18 @@ exports.initGame = function (sio, socket) {
   gameSocket = socket;
   gameSocket.emit("connected", { message: "You are connected!" });
 
-  gameSocket.on("disconnect", leaveGame);
+  //Game Setup Events
   gameSocket.on("createNewGame", createNewGame);
   gameSocket.on("joinGame", joinGame);
   gameSocket.on("startGame", nextQuestion);
+
+  //Question Control Events
+  gameSocket.on("answerQuestion", answerQuestion);
   gameSocket.on("nextQuestion", nextQuestion);
 
   // Player Events
+  gameSocket.on("disconnect", leaveGame);
 
-  gameSocket.on("answerQuestion", answerQuestion);
   // gameSocket.on('restartGame', restartGame);
 };
 
