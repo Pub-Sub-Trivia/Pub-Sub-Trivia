@@ -19,13 +19,14 @@ class Game {
     this.players[socket] = {
       username,
       score: 0,
+      answers: [],
     };
-      this.playerCount++;
+    this.playerCount++;
   }
   // Remove a player
   removePlayer(socket) {
-      delete this.player[socket];
-      this.playerCount--;
+    delete this.player[socket];
+    this.playerCount--;
   }
 
   // get current question
@@ -38,18 +39,35 @@ class Game {
     this.currentRound++;
   }
 
+  everyoneHasAnswered() {
+    return this.players === this.answersRecieved;
+  }
+
+  /**
+   * player: {
+   *  playerName:
+   *  score:
+   *  answers: [];
+   * }
+   */
   // checkPlayerAnswer
-    checkPlayerAnswer(socket, answer) {
-      this.answersRecieved++
+  checkPlayerAnswer(socket, answer) {
+    this.answersRecieved++;
+    this.players[socket].answers.push(answer);
     if (answer === this.questions[this.currentRound].correct_answer) {
       this.players[socket].score + 100;
     }
   }
-  
+
   // getScores
-    getScores() {
-        return this.players;
-    }
+  getScores() {
+    return this.players;
+  }
+
+  // check if Game is Over
+  isGameOver() {
+    return this.currentRound >= this.questions.length;
+  }
 }
 
 module.exports = Game;
