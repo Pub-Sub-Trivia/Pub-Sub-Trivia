@@ -139,7 +139,7 @@ function answerQuestion(data) {
 function leaveGame(data) {
   const { gameID, playerName } = data;
   const socketID = this.id;
-  activeGames[gameID].removePlayer(socketID);
+  // activeGames[gameID].removePlayer(socketID);
   io.sockets.in(gameID).emit(
     "playerLeftRoom",
     { socketID, gameID, playerName },

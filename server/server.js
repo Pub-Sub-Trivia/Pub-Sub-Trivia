@@ -7,8 +7,6 @@ const io = require("socket.io")(http, {
   },
 });
 
-const apiController = require("./controllers/apiController");
-const gameController = require("./controllers/gameController");
 const socketController = require("./controllers/socketController");
 
 const PORT = 3000;
@@ -43,4 +41,4 @@ io.on("connection", (socket) => {
 
 http.listen(PORT, () => {
   console.log("Geodude rocking on port " + PORT);
-});
+})
