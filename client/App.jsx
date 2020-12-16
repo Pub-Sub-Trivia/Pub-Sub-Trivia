@@ -17,7 +17,7 @@ import {NameProvider} from './context/NameContext.jsx'
 
 export default function App(){
     return(
-        <NameProvider>
+        
         <div>
         <h1>Pub Sub Trivia</h1>
         <Router>
@@ -26,15 +26,18 @@ export default function App(){
                 <Route path="/join">
                     <Join/>
                 </Route>
-
                 
-                    <Route path="/create">
+                <Route path="/create">
+                    <NameProvider>
                         <Create/>
-                    </Route>
+                    </NameProvider>
+                </Route>
 
-                    <Route path="/settings">
+                <Route path="/settings">
+                    <NameProvider>
                         <Settings />
-                    </Route>
+                    </NameProvider>
+                </Route>
 
                 <Route path="/triviamain">
                     <TriviaMain/>
@@ -59,7 +62,7 @@ export default function App(){
             </Switch>
         </Router>
         </div>
-        </NameProvider>
+        
     )
 }
 

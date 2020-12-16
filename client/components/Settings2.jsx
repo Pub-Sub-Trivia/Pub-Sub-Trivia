@@ -1,7 +1,7 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
 //react-router-dom
 import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import NameContext from '../context/NameContext.jsx'
+import {NameContext} from '../context/NameContext.jsx'
 
 export default function create(){
   const [subcategories, setSubcategories] = useState(undefined);
