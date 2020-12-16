@@ -71,4 +71,3 @@ class Game {
 }
 
 module.exports = Game;
-N;
