@@ -23,15 +23,11 @@ module.exports = {
       "Access-Control-Allow-Origin": "*",
     },
     proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        secure: false,
+      "/socket.io": {
+        target: "http://localhost:3000",
+        ws: true,
       },
-      '/socket.io': {
-        target: 'http://localhost:3000',
-        ws: true
-      }
-    }
+    },
   },
   module: {
     rules: [

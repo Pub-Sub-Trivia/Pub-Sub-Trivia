@@ -1,5 +1,6 @@
 let io;
 let gameSocket;
+const axios = require("axios");
 const { response } = require("express");
 const { config } = require("webpack");
 // If this doesn't work... try switching these to vars
@@ -20,15 +21,18 @@ exports.initGame = function (sio, socket) {
   gameSocket = socket;
   gameSocket.emit("connected", { message: "You are connected!" });
 
-  gameSocket.on("disconnect", leaveGame);
+  //Game Setup Events
   gameSocket.on("createNewGame", createNewGame);
   gameSocket.on("joinGame", joinGame);
   gameSocket.on("startGame", nextQuestion);
+
+  //Question Control Events
+  gameSocket.on("answerQuestion", answerQuestion);
   gameSocket.on("nextQuestion", nextQuestion);
 
   // Player Events
+  gameSocket.on("disconnect", leaveGame);
 
-  gameSocket.on("answerQuestion", answerQuestion);
   // gameSocket.on('restartGame', restartGame);
 };
 
@@ -43,16 +47,21 @@ function createNewGame(data) {
   // Retrieve questions from the API based on the specified configuration
   const questions = fetchQuestions(config);
 
-  //Create a new game state and unique ID for Socket.IO Roon
-  const gameState = new Game(this.id, playerName, questions);
-  const gameID = gameState.getID();
-  activeGames[gameID] = gameState;
+  if (typeof questions !== "Error") {
+    //Create a new game state and unique ID for Socket.IO Roon
+    const gameState = new Game(this.id, playerName, questions);
+    const gameID = gameState.getID();
+    activeGames[gameID] = gameState;
 
-  // Return the Room ID and the socket ID to the browser client
-  this.emit("newGameCreated", { socketID, gameID });
+    // Return the Room ID and the socket ID to the browser client
+    this.emit("newGameCreated", { socketID, gameID });
 
-  // Join the Room and wait for the players
-  this.join(gameID.toString());
+    // Join the Room and wait for the players
+    this.join(gameID.toString());
+  } else {
+    // Emt an error if aquestions could not be retrieved from the API
+    this.emit("error", { message: "Game could not be created" });
+  }
 }
 
 /**
@@ -136,3 +145,32 @@ function leaveGame(data) {
     { socketID, gameID, playerName },
   );
 }
+
+const buildQuery = (config) => {
+  const { amount, category, difficulty } = config;
+  let URL = `https://opentdb.com/api.php?amount=${amount}`;
+  if (category) {
+    URL += `&category=${category}`;
+  }
+  if (difficulty) {
+    URL += `&difficulty=${difficulty}`;
+  }
+  return URL;
+};
+
+const getQuestions = (queryString) => {
+  console.log("Fetching questions");
+  axios.get(queryString)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+};
+
+const fetchQuestions = (config) => {
+  const query = buildQuery(config);
+  const questions = getQuestions(query);
+  return questions;
+};
