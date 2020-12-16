@@ -19,10 +19,19 @@ module.exports = {
     publicPath: "/",
     // fallback to the root for other urls
     historyApiFallback: true,
-    proxy: {
-      "/api": "http://localhost:3000",
-      secure: false,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        secure: false,
+      },
+      '/socket.io': {
+        target: 'http://localhost:3000',
+        ws: true
+      }
+    }
   },
   module: {
     rules: [
