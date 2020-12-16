@@ -3,6 +3,9 @@ import React, {Component, useState, useEffect, useContext} from 'react';
 import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {NameContext} from '../context/NameContext.jsx'
 import {GlobalContext} from '../context/GlobalContext.jsx'
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "http://localhost:3000";
+
 
 export default function create(){
   const [subcategories, setSubcategories] = useState(undefined);
@@ -25,24 +28,11 @@ export default function create(){
       })
       setSubcategories(subcategoryItems);
     })
+    const socket = socketIOClient(ENDPOINT);
+    socket.on("connected", data => {
+      console.log("Connected");
+    });  
   },[])
-  
-  // apiController.buildQuery  = (req, res, next) => {
-  //   console.log("Building query");
-  //   const { amount, category, difficulty, type, timeLimit } = req.body;
-  //     let URL = `https://opentdb.com/api.php?amount=${amount}`;
-  //     if (category) {
-  //       URL += `&category=${category}`;
-  //     }
-  //     if (difficulty) {
-  //         URL += `&difficulty=${difficulty}`
-  //     }
-  //     if (type) {
-  //       URL += `&type=${type}`;
-  //     }
-  //     res.locals.URL = URL;
-  //     return next()
-  // }
 
   function grabIDCatergory(category){
     let id = subcategories.filter(item=>{
@@ -71,8 +61,7 @@ export default function create(){
     .then(data=>{
       console.log(data.gameID);
       setSocketNum(data.gameID);
-    })
-    
+    }) 
   }
 
   return(
