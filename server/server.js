@@ -21,17 +21,6 @@ app.get("/", (req, res) => {
   res.status(200).sendFile("../client/index.html");
 });
 
-app.get(
-  "/api/newgame",
-  apiController.buildQuery,
-  apiController.getQuestions,
-  gameController.createLobby,
-  (req, res) => {
-    console.log(res.locals.gameID);
-    res.status(200).send({ gameID: res.locals.gameID });
-  },
-);
-
 // Global error handler for client-side errors
 app.use("*", (req, res) => {
   res.status(404).send("Not Found");
