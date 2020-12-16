@@ -1,14 +1,15 @@
 const express = require("express");
 const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http, {
+const http = require("http").createServer(app);
+const io = require("socket.io")(http, {
   cors: {
-    origin: '*',
-  }
+    origin: "*",
+  },
 });
 
-const apiController = require('./controllers/apiController');
-const gameController = require('./controllers/gameController')
+const apiController = require("./controllers/apiController");
+const gameController = require("./controllers/gameController");
+const socketController = require("./controllers/socketController");
 
 const PORT = 3000;
 
@@ -20,10 +21,16 @@ app.get("/", (req, res) => {
   res.status(200).sendFile("../client/index.html");
 });
 
-app.get("/api/newgame", apiController.buildQuery, apiController.getQuestions, gameController.createLobby, (req, res) => {
-  console.log(res.locals.gameID);
-  res.status(200).send({ gameID: res.locals.gameID });
-})
+app.get(
+  "/api/newgame",
+  apiController.buildQuery,
+  apiController.getQuestions,
+  gameController.createLobby,
+  (req, res) => {
+    console.log(res.locals.gameID);
+    res.status(200).send({ gameID: res.locals.gameID });
+  },
+);
 
 // Global error handler for client-side errors
 app.use("*", (req, res) => {
@@ -42,12 +49,8 @@ app.use((err, req, res, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("New client connected");
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-  });
+  socketController.initGame(io, socket);
 });
-
 
 http.listen(PORT, () => {
   console.log("Geodude rocking on port " + PORT);
