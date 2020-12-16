@@ -4,6 +4,7 @@ apiController = {};
 
 apiController.buildQuery  = (req, res, next) => {
   console.log("Building query");
+  console.log(req.body)
   const { amount, category, difficulty, type, timeLimit } = req.body;
     let URL = `https://opentdb.com/api.php?amount=${amount}`;
     if (category) {

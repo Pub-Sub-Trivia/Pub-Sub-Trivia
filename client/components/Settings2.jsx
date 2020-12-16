@@ -2,14 +2,17 @@ import React, {Component, useState, useEffect, useContext} from 'react';
 //react-router-dom
 import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {NameContext} from '../context/NameContext.jsx'
+import {GlobalContext} from '../context/GlobalContext.jsx'
 
 export default function create(){
   const [subcategories, setSubcategories] = useState(undefined);
   const [numQuestions, setNumQuestions] = useState(5);
   const [diffQuestions, setDiffQuestions] = useState('Any Difficulty');
   const [categoryQuestions, setCategoryQuestions] = useState('Any Category');
+  const [categoryID, setCategoryID] = useState(null);
   // const [name, setName] = useState('');
   const [name, setName] =  useContext(NameContext);
+  const {socketNum, setSocketNum} = useContext(GlobalContext)
 
   useEffect(()=>{
     let categories = undefined
@@ -23,8 +26,55 @@ export default function create(){
       setSubcategories(subcategoryItems);
     })
   },[])
+  
+  // apiController.buildQuery  = (req, res, next) => {
+  //   console.log("Building query");
+  //   const { amount, category, difficulty, type, timeLimit } = req.body;
+  //     let URL = `https://opentdb.com/api.php?amount=${amount}`;
+  //     if (category) {
+  //       URL += `&category=${category}`;
+  //     }
+  //     if (difficulty) {
+  //         URL += `&difficulty=${difficulty}`
+  //     }
+  //     if (type) {
+  //       URL += `&type=${type}`;
+  //     }
+  //     res.locals.URL = URL;
+  //     return next()
+  // }
 
-  console.log(name)
+  function grabIDCatergory(category){
+    let id = subcategories.filter(item=>{
+      return item.props.value === category;
+    })
+    setCategoryID(id[0].key)
+  }
+
+  function fetchSocketNum(){
+    let sendData = {
+      amount: numQuestions,
+      category: categoryID,
+      difficulty: diffQuestions,
+      type: "multiple",
+      timeLimit:"n/a" 
+    }
+    fetch('/api/newGame',{
+      method:'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(sendData)
+    })
+    .then(res=>res.json())
+    .then(data=>{
+      console.log(data.gameID);
+      setSocketNum(data.gameID);
+    })
+    
+  }
+
   return(
     <div>
         <h3>Name:</h3>
@@ -49,7 +99,7 @@ export default function create(){
       </div>
       <div>
       <h3>Select Category</h3>
-      <select name="Categories" value="Any Category" onChange={(event)=>{setCategoryQuestions(event.target.value);}} value={categoryQuestions}>
+      <select name="Categories" value="Any Category" onChange={(event)=>{setCategoryQuestions(event.target.value);grabIDCatergory(event.target.value)}} value={categoryQuestions}>
         <option>
           Any Category
         </option>
@@ -57,7 +107,7 @@ export default function create(){
       </select>
       </div>
       <Link to="/create">
-        <button onClick={()=>{}}>Game Lobby</button>
+        <button onClick={()=>{fetchSocketNum()}}>Game Lobby</button>
       </Link>
     </div>
   )
