@@ -1,11 +1,12 @@
 class Game {
-  constructor(creator, questions) {
+  constructor(socketID, creatorName, questions) {
     this.gameID = Math.floor(Math.random() * 10000);
     this.currentRound = 0;
     this.playerCount = 0;
     this.answersRecieved = 0;
-    this.players = { creator };
+    this.players = {};
     this.questions = questions;
+    this.addPlayer(socketID, creatorName);
   }
 
   // Get game ID
