@@ -61,7 +61,7 @@ export default function create(){
   if(redirect===false){
 
     return(
-        <div>
+        <div className="page">
           <p>Name:</p>
           <input type="text" required="required" placeholder="Your Name" onChange={(event)=>{setName(event.target.value)}} value={name}></input>
           <p>Lobby ID:</p>

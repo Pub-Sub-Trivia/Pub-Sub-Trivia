@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Switch, Route, Link, Redirect} from "react-rout
 import {GlobalContext} from '../context/GlobalContext.jsx'
 
 export default function create(){
-  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, answers, setAnswers, score, setScore, globalRedirect, setGlobalRedirect} = useContext(GlobalContext)
+  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, answers, setAnswers, score, setScore, globalRedirect, setGlobalRedirect,  host, setHost} = useContext(GlobalContext)
   // const [redirect,setRedirect] = useState(false);
 
 
@@ -37,7 +37,7 @@ export default function create(){
 
   if(globalRedirect===false){
     return(
-      <div>
+      <div className="page">
         <Link to="/lobbyscore">
           <button>Overall Score</button>
         </Link>
@@ -47,7 +47,9 @@ export default function create(){
             return <button style={{ color: question.correctAnswer === index ? 'green' : 'red' }} key={index} value={el}>{el}</button> 
           })}
         </div>
-        <button onClick={()=>{nextQuestion()}}>Next Question</button>
+        {host &&
+          <button onClick={()=>{nextQuestion()}}>Next Question</button>
+        }
       </div>
     )
 

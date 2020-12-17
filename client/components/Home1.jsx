@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 export default function Home(){
     return(
-      <div>
+      <div className="page">
         <Link to="/join">
           <button>Join Game</button>
         </Link>

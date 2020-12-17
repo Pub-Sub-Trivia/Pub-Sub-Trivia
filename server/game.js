@@ -2,7 +2,7 @@ class Game {
   constructor(socketID, creatorName, questions) {
     this.gameID = Math.floor(Math.random() * 10000);
     this.currentRound = 0;
-    this.playerCount = 0;
+    this.playerCount = -1;
     this.answersRecieved = 0;
     this.players = {};
     this.questions = questions;
@@ -16,6 +16,7 @@ class Game {
 
   // Add a player
   addPlayer(socket, username) {
+    console.log(username, socket)
     this.players[socket] = {
       username,
       score: 0,
@@ -35,12 +36,15 @@ class Game {
   }
   // increment round
   nextRound() {
+    console.log("next round")
     this.answersRecieved = 0;
     this.currentRound++;
   }
 
   everyoneHasAnswered() {
-    return this.players === this.answersRecieved;
+    console.log( this.playerCount === this.answersRecieved)
+    console.log(this.playerCount, this.answersRecieved)
+    return this.playerCount === this.answersRecieved;
   }
 
   /**
@@ -54,13 +58,16 @@ class Game {
   checkPlayerAnswer(socket, answer) {
     this.answersRecieved++;
     this.players[socket].answers.push(answer);
+    console.log(answer)
+    console.log(this.questions[this.currentRound].correct_answer)
     if (answer === this.questions[this.currentRound].correct_answer) {
-      this.players[socket].score + 100;
+      this.players[socket].score += 100;
     }
   }
 
   // getScores
   getScores() {
+    console.log(this.players)
     return this.players;
   }
 

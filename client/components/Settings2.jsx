@@ -72,7 +72,7 @@ export default function create(){
   }
 
   return(
-    <div>
+    <div className="page">
         <h3>Name:</h3>
         <input type="text" required="required" placeholder="Your Name" onChange={(event)=>{setName(event.target.value)}} value={name}></input>
       <div>

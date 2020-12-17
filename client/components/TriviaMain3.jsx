@@ -43,7 +43,7 @@ export default function create(){
     // console.log("wait")
     return(
 
-    <div>
+    <div className="page">
         <div>
           <h3>Question #: </h3>
           <h3>Time Remaining: </h3>
@@ -61,7 +61,7 @@ export default function create(){
   }else{
     // console.log("working")
     return(
-      <div>
+      <div className="page">
         <div>
           <p>timer:{timer}</p>
         </div>

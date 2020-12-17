@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {GlobalContext} from '../context/GlobalContext.jsx'
 
 export default function create(){
-  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, score, setScore, globalRedirect, setGlobalRedirect} = useContext(GlobalContext)
+  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, score, setScore, globalRedirect, setGlobalRedirect, host, setHost} = useContext(GlobalContext)
 
   useEffect(()=>{
     if(socket){
@@ -37,6 +37,7 @@ export default function create(){
         }
         setScore(curScore)
       })
+      setHost(true);
     }
   },[])
 
@@ -51,7 +52,7 @@ export default function create(){
   
 
   return(
-    <div>
+    <div className="page">
       <p>Name:</p>
       <p>{name}</p>
       <p>Lobby ID:</p>
