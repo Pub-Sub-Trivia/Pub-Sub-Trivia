@@ -1,7 +1,6 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
 //react-router-dom
 import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import {NameContext} from '../context/NameContext.jsx'
 import {GlobalContext} from '../context/GlobalContext.jsx'
 import socketIOClient from "socket.io-client";
 const ENDPOINT = "http://localhost:3000";
@@ -13,9 +12,8 @@ export default function create(){
   const [diffQuestions, setDiffQuestions] = useState("");
   const [categoryQuestions, setCategoryQuestions] = useState('Any Category');
   const [categoryID, setCategoryID] = useState(null);
-  // const [name, setName] = useState('');
-  const [name, setName] =  useContext(NameContext);
-  const {gameID, setGameID, socket, setSocket} = useContext(GlobalContext)
+  
+  const {gameID, setGameID, socket, setSocket, name, setName} = useContext(GlobalContext)
 
   useEffect(()=>{
     let categories = undefined
