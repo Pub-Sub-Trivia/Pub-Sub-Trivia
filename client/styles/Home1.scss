@@ -1,0 +1,23 @@
+#home{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+button {
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  margin-top: 6vh;
+  font-size: 7.5vw;
+  font-weight: 700;
+  white-space: nowrap;
+  width: 75vw;
+  border-radius: 2vw;
+  color: #eeeeee;
+  background-color: #7a421c;
+  border: solid #f59b45 1vw;
+  font-family: 'Oswald', sans-serif;
+}
