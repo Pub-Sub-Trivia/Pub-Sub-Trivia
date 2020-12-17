@@ -37,7 +37,7 @@ export default function create(){
         <p>Name:</p>
         <input type="text" required="required" placeholder="Your Name" onChange={(event)=>{setName(event.target.value)}} value={name}></input>
         <p>Lobby ID:</p>
-        <input type="text" required="required" placeholder="Input Lobby ID"  onChange={(event)=>{setSocketNum(event.target.value)}} value={socketNum}></input>
+        <input type="text" required="required" placeholder="Input Lobby ID"  onChange={(event)=>{setGameID(event.target.value)}} value={gameID}></input>
         <div><button onClick={()=>{connectToSocket()}}>Join Game</button></div>
       </div>
     )
