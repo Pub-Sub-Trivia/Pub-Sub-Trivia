@@ -12,6 +12,7 @@ import LobbyAnswers from './components/LobbyAnswers4.jsx'
 import LobbyScore from './components/LobbyScore5.jsx'
 import EndGame from './components/EndGame6.jsx'
 import {NameProvider} from './context/NameContext.jsx'
+import {QuestionProvider} from './context/QuestionContext.jsx'
 
 //render home
 
@@ -30,9 +31,13 @@ export default function App(){
                 </Route>
                 
                 <Route path="/create">
-                    <NameProvider>
-                        <Create/>
-                    </NameProvider>
+                    <QuestionProvider>
+                        <NameProvider>
+                            <Create/>
+                        </NameProvider>
+                    </QuestionProvider>
+
+
                 </Route>
 
                 <Route path="/settings">

@@ -19,7 +19,7 @@ export default function create(){
         <p>timer:{timer}</p>
       </div>
       <div>
-        <button > A. placeholder</button>
+        <button> A. placeholder</button>
         <button> B. placeholder</button>
         <button> C. placeholder</button>
         <button> D. placeholder</button>
