@@ -134,7 +134,8 @@ function answerQuestion(data) {
   }
   // Send the current scores to everybody
   const scores = activeGames[gameID].getScores();
-  io.sockets.in(gameID).emit(
+  // io.sockets.in(gameID).emit(
+  io.sockets.emit(
     "currentScores",
     { socketID, gameID, scores, everyoneHasAnswered },
   );
