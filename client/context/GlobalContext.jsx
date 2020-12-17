@@ -13,7 +13,8 @@ export const GlobalProvider = props =>{
     const [score, setScore] = useState([]);
     const [globalRedirect, setGlobalRedirect] = useState(false);
     const [host, setHost] = useState(false);
+    const [endGame, setEndGame] = useState(0);
 
-    const value = {socket, setSocket, gameID, setGameID, players, setPlayers, name, setName, question, setQuestion, answers, setAnswers, score, setScore,  globalRedirect, setGlobalRedirect, host, setHost}
+    const value = {socket, setSocket, gameID, setGameID, players, setPlayers, name, setName, question, setQuestion, answers, setAnswers, score, setScore,  globalRedirect, setGlobalRedirect, host, setHost, endGame, setEndGame}
     return(<GlobalContext.Provider value={value}>{props.children}</GlobalContext.Provider>)
 }

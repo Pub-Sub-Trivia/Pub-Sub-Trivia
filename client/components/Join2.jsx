@@ -6,7 +6,7 @@ import socketIOClient from "socket.io-client";
 const ENDPOINT = "http://localhost:3000";
 
 export default function create(){
-  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, score, setScore, globalRedirect, setGlobalRedirect} = useContext(GlobalContext)
+  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, score, setScore, globalRedirect, setGlobalRedirect, endGame, setEndGame} = useContext(GlobalContext)
   const [redirect, setRedirect] = useState(false);
   useEffect(()=>{
     const conSocket = socketIOClient(ENDPOINT);
@@ -27,9 +27,7 @@ export default function create(){
         answers: answersArr,
         correctAnswer: insert
       }
-      console.log(question)
       setQuestion(question);
-      console.log("test next ques")
       setGlobalRedirect(true);
 
       setRedirect(true);

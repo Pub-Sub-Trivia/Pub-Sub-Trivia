@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Switch, Route, Link, Redirect} from "react-rout
 import {GlobalContext} from '../context/GlobalContext.jsx'
 
 export default function create(){
-  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, answers, setAnswers, score, setScore, globalRedirect, setGlobalRedirect,  host, setHost} = useContext(GlobalContext)
+  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, answers, setAnswers, score, setScore, globalRedirect, setGlobalRedirect,  host, setHost, endGame, setEndGame} = useContext(GlobalContext)
   // const [redirect,setRedirect] = useState(false);
 
 
@@ -33,8 +33,10 @@ export default function create(){
     socket.emit("nextQuestion",data);
     // setRedirect(true);
   }
-  console.log(globalRedirect)
-
+  console.log(endGame)
+  // if(endGame === 0){
+  //   return <Redirect to='/endgame'></Redirect>
+  // }
   if(globalRedirect===false){
     return(
       <div className="page">
@@ -47,8 +49,23 @@ export default function create(){
             return <button style={{ color: question.correctAnswer === index ? 'green' : 'red' }} key={index} value={el}>{el}</button> 
           })}
         </div>
-        {host &&
+        {host && endGame !==0 &&
           <button onClick={()=>{nextQuestion()}}>Next Question</button>
+        }
+        {
+          endGame === 0 && <Link to="/endgame"><button>End Game</button></Link>
+        }
+        {
+          endGame === -5 && <Link to="/endgame"><button>End Game</button></Link>
+        }
+        {
+          endGame === -10 && <Link to="/endgame"><button>End Game</button></Link>
+        }
+        {
+          endGame === -15 && <Link to="/endgame"><button>End Game</button></Link>
+        }
+        {
+          endGame === -20 && <Link to="/endgame"><button>End Game</button></Link>
         }
       </div>
     )
