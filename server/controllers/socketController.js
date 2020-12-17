@@ -122,6 +122,7 @@ function nextQuestion(data) {
  * @param data gameId
  */
 function answerQuestion(data) {
+  console.log(data)
   // console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
   const { gameID, answer } = data;
   const socketID = this.id;
