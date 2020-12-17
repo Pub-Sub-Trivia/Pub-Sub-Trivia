@@ -43,25 +43,24 @@ function createNewGame(data) {
   //Destructuring playerName and game settings from req
   const { config, playerName } = data;
   const socketID = this.id;
-
   // Retrieve questions from the API based on the specified configuration
-  const questions = fetchQuestions(config);
-
-  if (typeof questions !== "Error") {
+  const query = buildQuery(config);
+  axios.get(query)
+  .then((response) => {
+    const questions = response.data.results;
     //Create a new game state and unique ID for Socket.IO Roon
     const gameState = new Game(this.id, playerName, questions);
     const gameID = gameState.getID();
     activeGames[gameID] = gameState;
-
     // Return the Room ID and the socket ID to the browser client
     this.emit("newGameCreated", { socketID, gameID });
-
     // Join the Room and wait for the players
     this.join(gameID.toString());
-  } else {
-    // Emt an error if aquestions could not be retrieved from the API
-    this.emit("error", { message: "Game could not be created" });
-  }
+  })
+  .catch((error) => {
+    // Emit an error if aquestions could not be retrieved from the API
+  this.emit("error", { message: "Game could not be created" });
+  });
 }
 
 /**
@@ -73,9 +72,10 @@ function createNewGame(data) {
 function joinGame(data) {
   const { gameID, playerName } = data;
   const socketID = this.id;
-
+  
   // Look up the room ID in the Socket.IO manager object.
-  const room = gameSocket.manager.rooms["/" + gameID];
+  const room = activeGames[gameID]
+  
 
   // If the room exists...
   if (room != undefined) {
@@ -84,7 +84,7 @@ function joinGame(data) {
 
     //Update game state
     activeGames[gameID].addPlayer(socketID, playerName);
-
+    
     // Emit an event notifying the clients that the player has joined the room.
     io.sockets.in(gameID).emit(
       "playerJoinedRoom",
@@ -103,7 +103,7 @@ function joinGame(data) {
 function nextQuestion(data) {
   const { gameID } = data;
   const socketID = this.id;
-
+  console.log(gameID)
   if (activeGames[gameID].isGameOver()) {
     // If the all questions have been answered, send a game over signal with the final scores included
     const scores = activeGames[gameID].getScores();
@@ -156,21 +156,4 @@ const buildQuery = (config) => {
     URL += `&difficulty=${difficulty}`;
   }
   return URL;
-};
-
-const getQuestions = (queryString) => {
-  console.log("Fetching questions");
-  axios.get(queryString)
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error;
-    });
-};
-
-const fetchQuestions = (config) => {
-  const query = buildQuery(config);
-  const questions = getQuestions(query);
-  return questions;
 };
