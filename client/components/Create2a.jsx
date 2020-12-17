@@ -3,19 +3,21 @@ import React, {Component, useState, useEffect, useContext} from 'react';
 import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {NameContext} from '../context/NameContext.jsx'
 import {GlobalContext} from '../context/GlobalContext.jsx'
+import {QuestionContext} from '../context/QuestionContext.jsx'
 
 export default function create(){
   const [name, setName] =  useContext(NameContext);
-  const {socket, setSocket, gameID, setGameID}= useContext(GlobalContext)
-  // const [redirect,setRedirect] = 
+  const {socket, setSocket, gameID, setGameID, players, setPlayers}= useContext(GlobalContext)
+  const [question, setQuestion] = useContext(QuestionContext)
   
   useEffect(()=>{
     if(socket){
       socket.on("playerJoinedRoom", (data)=>{
         console.log(data)
+        setPlayers(players+1)
       });
       socket.on("newQuestion",(data)=>{
-        console.log(data);
+        setQuestion(data);
       })
     }
   },[])

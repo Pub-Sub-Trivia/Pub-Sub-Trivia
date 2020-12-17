@@ -9,6 +9,7 @@ const ENDPOINT = "http://localhost:3000";
 export default function create(){
   const [name, setName] =  useContext(NameContext);
   const {gameID, setGameID, socket, setSocket} = useContext(GlobalContext)
+  const [question, setQuestion] = useContext(QuestionContext)
 
   useEffect(()=>{
     const conSocket = socketIOClient(ENDPOINT);
@@ -19,6 +20,11 @@ export default function create(){
       
       console.log(data)
     });
+
+    conSocket.on("newQuestion",(data)=>{
+      setQuestion(data);
+    })
+
     setSocket(conSocket);
   },[])
 
