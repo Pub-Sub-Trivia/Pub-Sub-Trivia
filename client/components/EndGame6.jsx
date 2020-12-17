@@ -5,7 +5,9 @@ import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 export default function create(){
     return(
       <div className="page">
-        <div>Thanks for Playing</div>
+        <p>
+          Thanks for Playing
+        </p>
         <div>
           
         </div>

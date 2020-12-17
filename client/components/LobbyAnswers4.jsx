@@ -46,7 +46,13 @@ export default function create(){
         <div>
           <h3>Question: {question.question} </h3>
           {question.answers.map((el,index)=>{
-            return <button style={{ color: question.correctAnswer === index ? 'green' : 'red' }} key={index} value={el}>{el}</button> 
+            return <button style={
+              { 
+              backgroundColor: question.correctAnswer === index ? '#006400' : '#c20c06', 
+              borderColor: question.correctAnswer === index ? '#0c2d1c' : '#600000',
+              }
+            } 
+            key={index} value={el}>{el}</button> 
           })}
         </div>
         {host && endGame !==0 &&

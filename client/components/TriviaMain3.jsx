@@ -47,7 +47,7 @@ export default function create(){
     <div className="page">
         <div>
           <h3>Question #: </h3>
-          <h3>Time Remaining: </h3>
+          {/* <h3>Time Remaining: </h3> */}
           {/* <p>timer:{timer}</p> */}
         </div>
         <div>
@@ -63,9 +63,9 @@ export default function create(){
     // console.log("working")
     return(
       <div className="page">
-        <div>
+        {/* <div>
           <p>timer:{timer}</p>
-        </div>
+        </div> */}
         <div>
           <h3>Question: {question.question} </h3>
           {question.answers.map((el,index)=>{
