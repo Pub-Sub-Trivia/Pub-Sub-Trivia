@@ -5,7 +5,7 @@ class Game {
     this.playerCount = -1;
     this.answersRecieved = 0;
     this.players = {};
-    this.questions = questions;
+    this.questions = this.parseQuestions(questions);
     this.addPlayer(socketID, creatorName);
   }
 
@@ -16,7 +16,7 @@ class Game {
 
   // Add a player
   addPlayer(socket, username) {
-    console.log(username, socket)
+    console.log(username, socket);
     this.players[socket] = {
       username,
       score: 0,
@@ -36,14 +36,14 @@ class Game {
   }
   // increment round
   nextRound() {
-    console.log("next round")
+    console.log("next round");
     this.answersRecieved = 0;
     this.currentRound++;
   }
 
   everyoneHasAnswered() {
-    console.log( this.playerCount === this.answersRecieved)
-    console.log(this.playerCount, this.answersRecieved)
+    console.log(this.playerCount === this.answersRecieved);
+    console.log(this.playerCount, this.answersRecieved);
     return this.playerCount === this.answersRecieved;
   }
 
@@ -58,8 +58,8 @@ class Game {
   checkPlayerAnswer(socket, answer) {
     this.answersRecieved++;
     this.players[socket].answers.push(answer);
-    console.log(answer)
-    console.log(this.questions[this.currentRound].correct_answer)
+    console.log(answer);
+    console.log(this.questions[this.currentRound].correct_answer);
     if (answer === this.questions[this.currentRound].correct_answer) {
       this.players[socket].score += 100;
     }
@@ -67,13 +67,29 @@ class Game {
 
   // getScores
   getScores() {
-    console.log(this.players)
+    console.log(this.players);
     return this.players;
   }
 
   // check if Game is Over
   isGameOver() {
     return this.currentRound >= this.questions.length;
+  }
+
+  decodeHtmlCharCodes(str) {
+    return str.replace(/(&#(\d+);)/g, function (match, capture, charCode) {
+      return String.fromCharCode(charCode);
+    });
+  }
+
+  parseQuestions(arrayOfQuestions) {
+    arrayOfQuestions.forEach((el) => {
+      el.question = this.decodeHtmlCharCodes(el.question);
+      el.correct_answer = this.decodeHtmlCharCodes(el.correct_answer);
+      el.incorrect_answer[0] = this.decodeHtmlCharCodes(el.incorrect_answer[0]);
+      el.incorrect_answer[1] = this.decodeHtmlCharCodes(el.incorrect_answer[1]);
+      el.incorrect_answer[2] = this.decodeHtmlCharCodes(el.incorrect_answer[2]);
+    });
   }
 }
 
