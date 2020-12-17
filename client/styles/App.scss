@@ -9,19 +9,36 @@ body {
 
 #title {
   color: #eeeeee;
-  font-size: 12vw;
-  margin-top: 10vh;
-  margin-bottom: 5vh;
+  font-size: 10vw;
+  margin-top: 4vh;
+  margin-bottom: 2vh;
 }
 
 #icon {
-  height: 15vh;
+  height: 10vh;
 }
 
 button {
+  padding-top: 1.5vh;
+  padding-bottom: 1.5vh;
+  margin-top: 1.5vh;
+  font-size: 4vw;
+  font-weight: 700;
+  white-space: nowrap;
+  width: 75vw;
+  border-radius: 2vw;
+  color: #eeeeee;
+  background-color: #7a421c;
+  border: solid #f59b45 1vw;
+  font-family: 'Oswald', sans-serif;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.main-menu{
   padding-top: 5vh;
   padding-bottom: 5vh;
-  margin-top: 6vh;
+  margin: 5vh;
   font-size: 7.5vw;
   font-weight: 700;
   white-space: nowrap;
@@ -34,10 +51,58 @@ button {
 }
 
 .page{
+  margin-top: 4vw;
   width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+}
+
+.config {
+  margin: 1vw;
+  width: 75%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h3 {
+  padding-left: 2vw;
+  padding-right: 2vw;
+  font-family: 'Oswald', sans-serif;
+  font-size: 5vw;
+  font-weight: 500;
+  color: #eeeeee;
+}
+
+p {
+  font-family: 'Oswald', sans-serif;
+  font-size: 5vw;
+  font-weight: 500;
+  color: #eeeeee;
+}
+
+input {
+  font-family: 'Oswald', sans-serif;
+  font-size: 5vw;
+  font-weight: 500;
+  color: #7a421c;
+}
+
+select {
+  font-family: 'Oswald', sans-serif;
+  font-size: 5vw;
+  font-weight: 500;
+  color: #7a421c;
+  height: 5vh;
+}
+
+#category {
+  width: 60%;
+}
+
+#name {
+  width: 70%;
 }

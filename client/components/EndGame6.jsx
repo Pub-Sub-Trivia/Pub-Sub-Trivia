@@ -10,7 +10,7 @@ export default function create(){
           
         </div>
         <Link to="/home">
-          <button>Play Again?</button>
+          <button className="main-menu">Play Again?</button>
         </Link>
       </div>
     )
