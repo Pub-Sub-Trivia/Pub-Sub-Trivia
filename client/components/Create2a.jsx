@@ -54,13 +54,17 @@ export default function create(){
 
   return(
     <div className="page">
+      <div className="config">
       <p>Name:</p>
       <p>{name}</p>
+      </div>
+      <div className="config">
       <p>Lobby ID:</p>
       <p>{gameID}</p>
+      </div>
       <div>
         <Link to="/triviamain">
-          <button onClick={()=>{startGame()}}>Start Game</button>
+          <button className="main-menu" onClick={()=>{startGame()}}>Start Game</button>
         </Link>
       </div>
     </div> 

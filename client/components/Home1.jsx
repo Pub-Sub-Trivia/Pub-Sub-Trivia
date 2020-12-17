@@ -6,10 +6,10 @@ export default function Home(){
     return(
       <div className="page">
         <Link to="/join">
-          <button>Join Game</button>
+          <button className="main-menu">Join Game</button>
         </Link>
         <Link to="/settings">
-          <button>Create Game</button>
+          <button className="main-menu">Create Game</button>
         </Link>
       </div> 
     )
