@@ -13,7 +13,7 @@ export default function create(){
   const [categoryQuestions, setCategoryQuestions] = useState('Any Category');
   const [categoryID, setCategoryID] = useState(null);
   
-  const {gameID, setGameID, socket, setSocket, name, setName} = useContext(GlobalContext)
+  const {gameID, setGameID, socket, setSocket, name, setName, endGame, setEndGame} = useContext(GlobalContext)
 
   useEffect(()=>{
     let categories = undefined
@@ -48,7 +48,7 @@ export default function create(){
       category: categoryID,
       difficulty: diffQuestions,
     }
-    
+    setEndGame(numQuestions)
     socket.on("newGameCreated", (data)=>{
       const { socketID, gameID } = data;
       console.log(socketID, gameID)
