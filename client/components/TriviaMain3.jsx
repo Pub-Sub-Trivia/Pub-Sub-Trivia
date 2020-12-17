@@ -5,7 +5,7 @@ import {GlobalContext} from '../context/GlobalContext.jsx'
 
 
 export default function create(){
-  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, setGlobalRedirect} = useContext(GlobalContext)
+  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, setGlobalRedirect, endGame, setEndGame} = useContext(GlobalContext)
   const[redirect, setRedirect] = useState(false);
   const[timer, setTimer] = useState(45);
   // const _isMounted = useRef(true);
@@ -29,6 +29,7 @@ export default function create(){
     }
     socket.emit("answerQuestion", data);
     setRedirect(true);
+    setEndGame(endGame-1)
   }
 
   useEffect(()=>{

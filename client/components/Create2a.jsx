@@ -4,10 +4,11 @@ import {BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {GlobalContext} from '../context/GlobalContext.jsx'
 
 export default function create(){
-  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, score, setScore, globalRedirect, setGlobalRedirect, host, setHost} = useContext(GlobalContext)
+  const {gameID, setGameID, socket, setSocket, name, setName, question, setQuestion, players, setPlayers, score, setScore, globalRedirect, setGlobalRedirect, host, setHost, endGame, setEndGame} = useContext(GlobalContext)
 
   useEffect(()=>{
     if(socket){
+      console.log('itsa me')
       socket.on("playerJoinedRoom", (data)=>{
         console.log(data)
         setPlayers(players+1)
@@ -21,7 +22,7 @@ export default function create(){
           answers: answersArr,
           correctAnswer: insert
         }
-        console.log("test next ques")
+        
         setQuestion(question);
         setGlobalRedirect(true);
       })
@@ -33,7 +34,7 @@ export default function create(){
           let nameIndividual = data["scores"][userID[i]].username
           let scoreIndividual = data["scores"][userID[i]].score
           curScore.push({[nameIndividual]:scoreIndividual})
-
+          
         }
         setScore(curScore)
       })
