@@ -6,18 +6,38 @@ import {GlobalContext} from '../context/GlobalContext.jsx'
 
 export default function create(){
   const [name, setName] =  useContext(NameContext);
-  const {socket, setSocket, socketNum, setSocketNum}= useContext(GlobalContext)
-  console.log(socketNum)
+  const {socket, setSocket, gameID, setGameID}= useContext(GlobalContext)
+  // const [redirect,setRedirect] = 
+  
+  useEffect(()=>{
+    if(socket){
+      socket.on("playerJoinedRoom", (data)=>{
+        console.log(data)
+      });
+      socket.on("newQuestion",(data)=>{
+        console.log(data);
+      })
+    }
+  },[])
+
+  function startGame(){
+    if(gameID){
+      let data = {
+        gameID:gameID
+      }
+      socket.emit('startGame', data);
+    }
+  }
+
   return(
     <div>
       <p>Name:</p>
       <p>{name}</p>
       <p>Lobby ID:</p>
-      <p>{socketNum}</p>
-        <input type="text" required="required" placeholder="Lobby ID: X76Y"></input>
+      <p>{gameID}</p>
       <div>
         <Link to="/triviamain">
-          <button>Start Game</button>
+          <button onClick={()=>{startGame()}}>Start Game</button>
         </Link>
       </div>
     </div> 

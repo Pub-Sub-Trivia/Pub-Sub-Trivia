@@ -24,7 +24,9 @@ export default function App(){
             <Switch>
 
                 <Route path="/join">
-                    <Join/>
+                    <NameProvider>
+                        <Join/>
+                    </NameProvider>
                 </Route>
                 
                 <Route path="/create">

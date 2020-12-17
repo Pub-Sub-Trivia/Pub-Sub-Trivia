@@ -31,7 +31,7 @@ class Game {
 
   // get current question
   getCurrQuestion() {
-    return this.questions[currentRound];
+    return this.questions[this.currentRound];
   }
   // increment round
   nextRound() {

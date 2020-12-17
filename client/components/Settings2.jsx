@@ -10,12 +10,12 @@ const ENDPOINT = "http://localhost:3000";
 export default function create(){
   const [subcategories, setSubcategories] = useState(undefined);
   const [numQuestions, setNumQuestions] = useState(5);
-  const [diffQuestions, setDiffQuestions] = useState('Any Difficulty');
+  const [diffQuestions, setDiffQuestions] = useState("");
   const [categoryQuestions, setCategoryQuestions] = useState('Any Category');
   const [categoryID, setCategoryID] = useState(null);
   // const [name, setName] = useState('');
   const [name, setName] =  useContext(NameContext);
-  const {socketNum, setSocketNum} = useContext(GlobalContext)
+  const {gameID, setGameID, socket, setSocket} = useContext(GlobalContext)
 
   useEffect(()=>{
     let categories = undefined
@@ -28,40 +28,49 @@ export default function create(){
       })
       setSubcategories(subcategoryItems);
     })
-    const socket = socketIOClient(ENDPOINT);
-    socket.on("connected", data => {
+    const conSocket = socketIOClient(ENDPOINT);
+    conSocket.on("connected", data => {
       console.log("Connected");
     });  
+    setSocket(conSocket);
   },[])
-
+  
+  //set ID for category in state
   function grabIDCatergory(category){
     let id = subcategories.filter(item=>{
       return item.props.value === category;
     })
     setCategoryID(id[0].key)
   }
-
+  
+  //fetch game id and add current host user to game using connect to socket method called within "newGameCreated" event listner
   function fetchSocketNum(){
-    let sendData = {
+    let config = {
       amount: numQuestions,
       category: categoryID,
       difficulty: diffQuestions,
-      type: "multiple",
-      timeLimit:"n/a" 
     }
-    fetch('/api/newGame',{
-      method:'POST',
-      headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(sendData)
+    
+    socket.on("newGameCreated", (data)=>{
+      const { socketID, gameID } = data;
+      console.log(socketID, gameID)
+      setGameID(gameID)
+      connectToSocket(gameID)
     })
-    .then(res=>res.json())
-    .then(data=>{
-      console.log(data.gameID);
-      setSocketNum(data.gameID);
-    }) 
+    
+    socket.emit('createNewGame', {config, playerName:name })
+    
+    
+  } 
+
+  //allows host user to join game
+  function connectToSocket(gameID){
+    let data = {
+      gameID:gameID,
+      playerName:name
+    }
+    console.log(data)
+    socket.emit('joinGame', data);
   }
 
   return(
