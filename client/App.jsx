@@ -11,8 +11,7 @@ import TriviaMain from './components/TriviaMain3'
 import LobbyAnswers from './components/LobbyAnswers4.jsx'
 import LobbyScore from './components/LobbyScore5.jsx'
 import EndGame from './components/EndGame6.jsx'
-import {NameProvider} from './context/NameContext.jsx'
-import {QuestionProvider} from './context/QuestionContext.jsx'
+
 
 //render home
 
@@ -25,25 +24,19 @@ export default function App(){
             <Switch>
 
                 <Route path="/join">
-                    <NameProvider>
+                    
                         <Join/>
-                    </NameProvider>
+                   
                 </Route>
                 
                 <Route path="/create">
-                    <QuestionProvider>
-                        <NameProvider>
                             <Create/>
-                        </NameProvider>
-                    </QuestionProvider>
-
-
                 </Route>
 
                 <Route path="/settings">
-                    <NameProvider>
+
                         <Settings />
-                    </NameProvider>
+      
                 </Route>
 
                 <Route path="/triviamain">
