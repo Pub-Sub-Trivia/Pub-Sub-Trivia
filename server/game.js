@@ -1,3 +1,5 @@
+var decode = require('decode-html');
+
 class Game {
   constructor(socketID, creatorName, questions) {
     this.gameID = Math.floor(Math.random() * 10000);
@@ -76,20 +78,21 @@ class Game {
     return this.currentRound >= this.questions.length;
   }
 
-  decodeHtmlCharCodes(str) {
-    return str.replace(/(&#(\d+);)/g, function (match, capture, charCode) {
-      return String.fromCharCode(charCode);
-    });
+  convert(str)
+  {
+    str = decode(str);
+    str = str.replace(/&#039;/g, "'");
+    return str;
   }
-
   parseQuestions(arrayOfQuestions) {
-    arrayOfQuestions.forEach((el) => {
-      el.question = this.decodeHtmlCharCodes(el.question);
-      el.correct_answer = this.decodeHtmlCharCodes(el.correct_answer);
-      el.incorrect_answer[0] = this.decodeHtmlCharCodes(el.incorrect_answer[0]);
-      el.incorrect_answer[1] = this.decodeHtmlCharCodes(el.incorrect_answer[1]);
-      el.incorrect_answer[2] = this.decodeHtmlCharCodes(el.incorrect_answer[2]);
-    });
+    for(let i = 0; i < arrayOfQuestions.length; i++) {
+      arrayOfQuestions[i].question = this.convert(arrayOfQuestions[i].question);
+      arrayOfQuestions[i].correct_answer = this.convert(arrayOfQuestions[i].correct_answer);
+      arrayOfQuestions[i].incorrect_answers[0] = this.convert(arrayOfQuestions[i].incorrect_answers[0]);
+      arrayOfQuestions[i].incorrect_answers[1] = this.convert(arrayOfQuestions[i].incorrect_answers[1]);
+      arrayOfQuestions[i].incorrect_answers[2] = this.convert(arrayOfQuestions[i].incorrect_answers[2]);
+    }
+    return arrayOfQuestions;
   }
 }
 
